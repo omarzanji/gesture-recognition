@@ -10,6 +10,7 @@ def fetch_hand_landmarks() -> None:
         hands = mp.solutions.hands.Hands()
         img_counter = 0
         while True:
+            cropped_img = []
             success, img = capture.read()
             rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             results = hands.process(rgb)
@@ -51,8 +52,8 @@ def fetch_hand_landmarks() -> None:
                     x2 = x2 + padx
                     y1 = y1 + pady
 
-                    cv2.rectangle(img,(x1, y1),(x2, y2),(0,255,0),3)
-                    mp.solutions.drawing_utils.draw_landmarks(img, landmarks, mp.solutions.hands.HAND_CONNECTIONS)
+                    # cv2.rectangle(img,(x1, y1),(x2, y2),(0,255,0),3)
+                    # mp.solutions.drawing_utils.draw_landmarks(img, landmarks, mp.solutions.hands.HAND_CONNECTIONS)
                     
                     cropped_img = img[y2:y1,x1:x2]
                     # plt.imshow(cropped_img)
@@ -63,7 +64,7 @@ def fetch_hand_landmarks() -> None:
             k = cv2.waitKey(1)
             
             if k%256 == 32 and not cropped_img == []: # spacebar for screenshots
-                img_name = "up{}.png".format(img_counter)
+                img_name = "down{}.png".format(img_counter)
                 cv2.imwrite(img_name, cropped_img)
                 print("{} written!".format(img_name))
                 img_counter += 1
