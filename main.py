@@ -11,7 +11,7 @@ import numpy as np
 class GestureNet:
 
     def __init__(self):
-        self.labels = ['up', 'down']
+        self.labels = ['up', 'down', 'palm']
         try:
             self.x = np.load('data/x_data.npy')
             self.y = np.load('data/y_data.npy')
@@ -22,7 +22,7 @@ class GestureNet:
         self.x_train = self.x
         self.y_train = []
         for label in self.y:
-            onehot = [0, 0]
+            onehot = [0, 0, 0]
             onehot[self.labels.index(label)] = 1
             self.y_train.append(onehot)
         self.y_train = np.array(self.y_train)
@@ -32,7 +32,7 @@ class GestureNet:
         # AlexNet 
         model = Sequential([
             # layers.Normalization(),
-            layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(300,300,1)),
+            layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(227,227,3)),
             layers.BatchNormalization(),
             layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
             layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
@@ -50,7 +50,7 @@ class GestureNet:
             layers.Dropout(0.5),
             layers.Dense(4096, activation='relu'),
             layers.Dropout(0.5),
-            layers.Dense(2, activation='softmax'),
+            layers.Dense(3, activation='softmax'),
         ])
         
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics='accuracy')
@@ -58,13 +58,13 @@ class GestureNet:
 
     def train_model(self, model):
         name = 'GestureNet'
-        xtrain, xtest, ytrain, ytest = train_test_split(self.x_train, self.y_train, train_size=0.8)
-        self.hist = model.fit(xtrain, ytrain, epochs=30, verbose=1)
+        xtrain, xtest, ytrain, ytest = train_test_split(self.x_train, self.y_train, train_size=0.9)
+        self.hist = model.fit(xtrain, ytrain, epochs=90, verbose=1)
         self.plot_history(self.hist)
         model.summary()
         ypreds = model.predict(xtest)
         self.ypreds = ypreds
-        accuracy = accuracy_score(ytest, self.ypreds)
+        accuracy = accuracy_score(ytest, np.round(self.ypreds).astype(int))
         print(f'\n\n[Accuracy: {accuracy}]\n\n')
         self.ytest = ytest
         model.save(f'models/{name}')

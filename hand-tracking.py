@@ -8,7 +8,7 @@ def fetch_hand_landmarks() -> None:
     try:
         capture = cv2.VideoCapture(0)
         hands = mp.solutions.hands.Hands()
-        img_counter = 0
+        img_counter = 105
         while True:
             cropped_img = []
             success, img = capture.read()
