@@ -1,4 +1,4 @@
 # gesture-recognition
 Gesture recognition using OpenCV for pre-trained hand tracking via landmark localization. Gestures are learned by a basic Convolutional Neural Network (CNN) Deep Learning architecture.
 
-![Model Stats](model-stats.jpeg "Model Stats and Accuracy")
+![Model Stats](model-stats.jpg "Model Stats and Accuracy")
