@@ -77,6 +77,7 @@ class GestureNet:
         plt.xlabel('epoch')
         plt.legend(['training loss'], loc='upper right')
 
+
 if __name__ == '__main__':
     net = GestureNet()
     net.load_data()
