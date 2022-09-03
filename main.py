@@ -1,4 +1,3 @@
-from operator import indexOf
 from tensorflow.keras.models import Sequential
 import tensorflow.keras.layers as layers
 from sklearn.model_selection import train_test_split
@@ -7,16 +6,23 @@ import tensorflow as tf
 from tensorflow import keras
 from matplotlib import pyplot as plt
 import numpy as np
+import cv2
+import mediapipe as mp
+
+from hand_tracking import HandTracking
 
 class GestureNet:
 
-    def __init__(self):
+    def __init__(self, train=False):
         self.labels = ['up', 'down', 'palm']
-        try:
-            self.x = np.load('data/x_data.npy')
-            self.y = np.load('data/y_data.npy')
-        except:
-            print('cached x and y arrays not found...')
+        if train:
+            try:
+                self.x = np.load('data/x_data.npy')
+                self.y = np.load('data/y_data.npy')
+            except:
+                print('cached x and y arrays not found...')
+        else:
+            self.model = keras.models.load_model('models/GestureNet')
     
     def load_data(self):
         self.x_train = self.x
@@ -77,9 +83,17 @@ class GestureNet:
         plt.xlabel('epoch')
         plt.legend(['training loss'], loc='upper right')
 
+    def predict_gesture(self):
+        hand_tracking = HandTracking()
+        hand_tracking.fetch_hand_landmarks(model=self.model)
 
 if __name__ == '__main__':
-    net = GestureNet()
-    net.load_data()
-    model = net.create_model()
-    net.train_model(model)
+    TRAIN = 0
+    if TRAIN:
+        net = GestureNet(TRAIN)
+        net.load_data()
+        model = net.create_model()
+        net.train_model(model)
+    else:
+        net = GestureNet(TRAIN)
+        net.predict_gesture()

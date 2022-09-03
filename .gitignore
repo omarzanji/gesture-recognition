@@ -1,4 +1,6 @@
-data/raw_data
+data/raw_data/
 *.npy
-models/
 *.zip
+models/
+*.code-workspace
+__pycache__/
