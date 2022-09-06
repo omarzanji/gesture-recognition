@@ -65,7 +65,7 @@ class HandTracking:
                             try:
                                 resized = cv2.resize(cropped_img, dsize=(227, 227), interpolation=cv2.INTER_NEAREST)
                                 gesture_pred = model.predict(np.expand_dims(resized, 0))
-                                print(self.labels[np.argmax(gesture_pred)])
+                                print(self.labels[np.argmax(np.round(gesture_pred))])
                             except BaseException as e:
                                 cropped_img = []
 
