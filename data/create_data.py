@@ -17,14 +17,6 @@ for label in files:
             color_mode = "rgb",
             target_size = (227,227)
         )
-        # img2 = tf.image.adjust_brightness(
-        #     img1, 
-        # )
-        # img2.show()
-        # exit()
-        img_arr = tf.keras.preprocessing.image.img_to_array(img1)
-        x.append(img_arr)
-        y.append(label)
         img_arr = tf.keras.preprocessing.image.img_to_array(img1)
         x.append(img_arr)
         y.append(label)
