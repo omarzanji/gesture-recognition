@@ -14,7 +14,7 @@ from hand_tracking import HandTracking
 class GestureNet:
 
     def __init__(self, train=False):
-        self.labels = ['up', 'down', 'palm']
+        self.labels = ['palm', 'like', 'dislike']
         if train:
             try:
                 self.x = np.load('data/x_data.npy')
