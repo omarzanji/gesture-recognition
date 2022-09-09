@@ -49,8 +49,10 @@ for label in files:
     data_folder = os.listdir(f'raw_data/{label}')
     with open(label+'.json', 'r') as f:
         label_dict = json.load(f)
-    for file_name in data_folder:
-
+    print(f'processing {label}')
+    for cnt,file_name in enumerate(data_folder):
+        if cnt % 100 == 0: print(f'{int(cnt/5000)*100}%')
+        if cnt==5000: break
         # img1 = tf.keras.utils.load_img(
         #     path = f'raw_data/{label}/{file_name}',
         #     color_mode = "rgb",
