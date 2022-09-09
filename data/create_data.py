@@ -60,7 +60,11 @@ for label in files:
         img_path = f'raw_data/{label}/{file_name}'
         label_dict_key = file_name.strip('.jpg')
         img_boxes = label_dict[label_dict_key]['bboxes']
-        img_cropped = crop_hand(img_path, img_boxes[0])
+        img_labels = label_dict[label_dict_key]['labels']
+        box_ndx = 0
+        for ndx,imglabel in enumerate(img_labels):
+            if imglabel == label: box_ndx = ndx
+        img_cropped = crop_hand(img_path, img_boxes[ndx])
         img_arr = tf.keras.preprocessing.image.img_to_array(img_cropped)
         # plt.imshow(img_cropped)
         # plt.show()
