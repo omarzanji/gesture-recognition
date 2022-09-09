@@ -37,45 +37,62 @@ def crop_hand(img, box):
     # plt.show()
 
     
-    return cropped_img
+    return image, cropped_img
 
-files = os.listdir('raw_data')
-x = []
-y = []
+def process_raw_data():
+    files = os.listdir('raw_data')
 
-print('\n[Processing Data...]\n')
+    # x an y labels for gesture prediction mdoel
+    x_gesture = []
+    y_gesture = []
 
-for label in files:
-    data_folder = os.listdir(f'raw_data/{label}')
-    with open(label+'.json', 'r') as f:
-        label_dict = json.load(f)
-    print(f'processing {label}')
-    for cnt,file_name in enumerate(data_folder):
-        if cnt % 100 == 0: print(f'{(cnt/5000)*100}%')
-        if cnt==5000: break
-        # img1 = tf.keras.utils.load_img(
-        #     path = f'raw_data/{label}/{file_name}',
-        #     color_mode = "rgb",
-        #     target_size = (227,227)
-        # )
+    # x and y labels for hand detection
+    x_tracker = []
+    y_tracker = []
+    print('\n[Processing Data...]\n')
+
+    for label in files:
+        data_folder = os.listdir(f'raw_data/{label}')
+        with open(label+'.json', 'r') as f:
+            label_dict = json.load(f)
+        print(f'processing {label}')
+        for cnt,file_name in enumerate(data_folder):
+            if cnt % 100 == 0: print(f'{(cnt/5000)*100}%')
+            if cnt==5000: break
+            # img1 = tf.keras.utils.load_img(
+            #     path = f'raw_data/{label}/{file_name}',
+            #     color_mode = "rgb",
+            #     target_size = (227,227)
+            # )
+            
+            img_path = f'raw_data/{label}/{file_name}'
+            label_dict_key = file_name.strip('.jpg')
+
+            # img_box per img_label (same size)
+            img_boxes = label_dict[label_dict_key]['bboxes']
+            img_labels = label_dict[label_dict_key]['labels']
+            for ndx,imglabel in enumerate(img_labels):
+                if imglabel == label: # if label matches hand with ground truth use for gesture model
+                    box_coordinates = img_boxes[ndx]
+                    img_cropped = crop_hand(img_path, box_coordinates)
+                    img_arr = tf.keras.preprocessing.image.img_to_array(img_cropped)
+                    # plt.imshow(img_cropped)
+                    # plt.show()
+                    x_gesture.append(img_arr)
+                    y_gesture.append(label)
+                else: # use for hand tracker model
+                    img = Image.open(img_path).convert('RGB')
+                    img = cv2.resize(img, (227,227), interpolation=cv2.INTER_NEAREST)
+                    box_coordinates = img_boxes[ndx]
+                    x_tracker.append(tf.keras.preprocessing.image.img_to_array(img))
+                    y_tracker.append(box_coordinates)
+
         
-        img_path = f'raw_data/{label}/{file_name}'
-        label_dict_key = file_name.strip('.jpg')
-        img_boxes = label_dict[label_dict_key]['bboxes']
-        img_labels = label_dict[label_dict_key]['labels']
-        box_ndx = 0
-        for ndx,imglabel in enumerate(img_labels):
-            if imglabel == label: box_ndx = ndx
-        img_cropped = crop_hand(img_path, img_boxes[ndx])
-        img_arr = tf.keras.preprocessing.image.img_to_array(img_cropped)
-        # plt.imshow(img_cropped)
-        # plt.show()
-        x.append(img_arr)
-        y.append(label)
+    print('\n[Saving x and y arrays as .npy files]\n')
 
-print('\n[Saving x and y arrays as .npy]\n')
+    np.save('x_gesture_data.npy', x_gesture)
+    np.save('y__gesture_data.npy', y_gesture)
+    np.save('x_tracker_data.npy', x_gesture)
+    np.save('y_tracker_data.npy', y_tracker)
 
-np.save('x_data.npy', x)
-np.save('y_data.npy', y)
-
-print('\n[Done!]\n')
+    print('\n[Done!]\n')

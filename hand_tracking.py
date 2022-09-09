@@ -4,10 +4,11 @@ import mediapipe as mp
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
+from data.labels import LABELS
 
 class HandTracking:
     def __init__(self) -> None:
-        self.labels = ['like', 'dislike', 'palm']
+        self.labels = LABELS
 
     def fetch_hand_landmarks(self, model=None):
         try:

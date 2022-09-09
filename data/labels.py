@@ -1,0 +1,1 @@
+LABELS = ['like', 'dislike', 'palm']
