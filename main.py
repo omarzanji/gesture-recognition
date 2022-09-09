@@ -14,6 +14,7 @@ from data.labels import LABELS
 
 class HandTracker:
     def __init__(self, train=False):
+        self.train = train
         if train:
             try:
                 self.x = np.load('data/x_tracker_data.npy')
