@@ -7,7 +7,7 @@ import numpy as np
 
 class HandTracking:
     def __init__(self) -> None:
-        self.labels = ['palm', 'like', 'dislike']
+        self.labels = ['like', 'dislike', 'palm']
 
     def fetch_hand_landmarks(self, model=None):
         try:
