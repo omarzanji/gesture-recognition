@@ -51,7 +51,7 @@ for label in files:
         label_dict = json.load(f)
     print(f'processing {label}')
     for cnt,file_name in enumerate(data_folder):
-        if cnt % 100 == 0: print(f'{int(cnt/5000)*100}%')
+        if cnt % 100 == 0: print(f'{(cnt/5000)*100}%')
         if cnt==5000: break
         # img1 = tf.keras.utils.load_img(
         #     path = f'raw_data/{label}/{file_name}',

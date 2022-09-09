@@ -88,7 +88,7 @@ class GestureNet:
         hand_tracking.fetch_hand_landmarks(model=self.model)
 
 if __name__ == '__main__':
-    TRAIN = 0
+    TRAIN = 1
     if TRAIN:
         net = GestureNet(TRAIN)
         net.load_data()
