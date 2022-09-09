@@ -82,8 +82,8 @@ for label in files:
         except:
             continue
         img_arr = tf.keras.preprocessing.image.img_to_array(img_cropped)
-        plt.imshow(img_cropped)
-        plt.show()
+        # plt.imshow(img_cropped)
+        # plt.show()
         x.append(img_arr)
         y.append(label)
 
