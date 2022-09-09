@@ -37,7 +37,7 @@ def crop_hand(img, box):
     # plt.show()
 
     
-    return image, cropped_img
+    return cropped_img
 
 def process_raw_data():
     files = os.listdir('raw_data')
@@ -58,7 +58,7 @@ def process_raw_data():
         print(f'processing {label}')
         for cnt,file_name in enumerate(data_folder):
             if cnt % 100 == 0: print(f'{(cnt/5000)*100}%')
-            if cnt==5000: break
+            if cnt==6000: break
             # img1 = tf.keras.utils.load_img(
             #     path = f'raw_data/{label}/{file_name}',
             #     color_mode = "rgb",
@@ -82,7 +82,7 @@ def process_raw_data():
                     y_gesture.append(label)
                 else: # use for hand tracker model
                     img = Image.open(img_path).convert('RGB')
-                    img = cv2.resize(img, (227,227), interpolation=cv2.INTER_NEAREST)
+                    img = img.resize((227,227), Image.Resampling.NEAREST)
                     box_coordinates = img_boxes[ndx]
                     x_tracker.append(tf.keras.preprocessing.image.img_to_array(img))
                     y_tracker.append(box_coordinates)
@@ -96,3 +96,5 @@ def process_raw_data():
     np.save('y_tracker_data.npy', y_tracker)
 
     print('\n[Done!]\n')
+
+process_raw_data()
