@@ -4,60 +4,39 @@ import numpy as np
 import cv2
 import mediapipe as mp
 import matplotlib.pyplot as plt
+import json
+from PIL import Image
+
 hands = mp.solutions.hands.Hands()
 
-def crop_hand(img):
-    # rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-    img = cv2.imread(img, cv2.COLOR_BGR2RGB)
-    results = hands.process(img)
+def crop_hand(img, box):
+    # img = cv2.imread(img, cv2.COLOR_BGR2RGB)
+    image = Image.open(img).convert('RGB')
+    width, height = image.size
+    x1, y1, w, h = box
+    bbox = [x1 * width, y1 * height, (x1 + w) * width, (y1 + h) * height]
+    int_bbox = np.array(bbox).round().astype(np.int32)
 
-    if results.multi_hand_landmarks:
-        for landmarks in results.multi_hand_landmarks:
-            minx = 9999
-            maxy = -9999
-            maxx = -9999
-            miny = 9999
-            for id, lm in enumerate(landmarks.landmark):
-                h, w, c = img.shape
-                cx, cy = int(lm.x *w), int(lm.y*h)
+    x1 = int_bbox[0]
+    y1 = int_bbox[1]
+    x2 = int_bbox[2]
+    y2 = int_bbox[3]
+    cx, cy = (x1 + x2) / 2, (y1 + y2) / 2
 
-                # need to find max and min for x and y to draw rectangle around landmarks
-                if cx > maxx:
-                    maxx = cx
-                if cx < minx:
-                    minx = cx
-                if cy > maxy:
-                    maxy = cy
-                if cy < miny:
-                    miny = cy
+    w = h = max(x2 - x1, y2 - y1)
+    x1 = max(0, cx - 1.0 * w // 2)
+    y1 = max(0, cy - 1.0 * h // 2)
+    x2 = cx + 1.0 * w // 2
+    y2 = cy + 1.0 * h // 2
+    x1, y1, x2, y2 = list(map(int, (x1, y1, x2, y2)))
 
-            # pad the rectangle 20 pixels from landmarks
-            x1 = minx - 20
-            y1 = maxy + 20
-            x2 = maxx + 20
-            y2 = miny - 20
+    cropped_img = np.asarray(image.crop((x1, y1, x2, y2)))
+    # cropped_img = img[y2:y1,x1:x2]
+    cropped_img = cv2.resize(cropped_img, (227,227), interpolation=cv2.INTER_NEAREST)
+    # plt.imshow(cropped_img)
+    # plt.show()
 
-            # pad rectangle to make 300x300 square
-            if (x2 - x1) > (y1 - y2):
-                square = (x2 - x1) + 5
-            if (y1 - y2) > (x2 - x1):
-                square = (y1 - y2) + 5
-            padx = square - (x2 - x1)
-            pady = square - (y1 - y2)
-
-            x2 = x2 + padx
-            y1 = y1 + pady
-
-            # cv2.rectangle(img,(x1, y1),(x2, y2),(0,255,0),3)
-            # mp.solutions.drawing_utils.draw_landmarks(img, landmarks, mp.solutions.hands.HAND_CONNECTIONS)
-            
-            cropped_img = img[y2:y1,x1:x2]
-
-            # plt.imshow(cropped_img)
-            # plt.show()
-
-    # cv2.imshow("Image", img)
-            cropped_img = cv2.resize(cropped_img, (227,227), interpolation=cv2.INTER_NEAREST)
+    
     return cropped_img
 
 files = os.listdir('raw_data')
@@ -68,6 +47,8 @@ print('\n[Processing Data...]\n')
 
 for label in files:
     data_folder = os.listdir(f'raw_data/{label}')
+    with open(label+'.json', 'r') as f:
+        label_dict = json.load(f)
     for file_name in data_folder:
 
         # img1 = tf.keras.utils.load_img(
@@ -77,10 +58,9 @@ for label in files:
         # )
         
         img_path = f'raw_data/{label}/{file_name}'
-        try:
-            img_cropped = crop_hand(img_path)
-        except:
-            continue
+        label_dict_key = file_name.strip('.jpg')
+        img_boxes = label_dict[label_dict_key]['bboxes']
+        img_cropped = crop_hand(img_path, img_boxes[0])
         img_arr = tf.keras.preprocessing.image.img_to_array(img_cropped)
         # plt.imshow(img_cropped)
         # plt.show()
