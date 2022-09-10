@@ -90,12 +90,13 @@ def process_raw_data():
                         x_tracker.append(img_arr)
                         y_tracker.append(box_coordinates)
                 else: # use for hand tracker model
-                    img = Image.open(img_path).convert('RGB')
-                    img = img.resize((227,227), Image.Resampling.NEAREST)
-                    box_coordinates = img_boxes[ndx]
-                    if TRACK:
-                        x_tracker.append(tf.keras.preprocessing.image.img_to_array(img))
-                        y_tracker.append(box_coordinates)
+                    pass
+                    # img = Image.open(img_path).convert('RGB')
+                    # img = img.resize((227,227), Image.Resampling.NEAREST)
+                    # box_coordinates = img_boxes[ndx]
+                    # if TRACK:
+                    #     x_tracker.append(tf.keras.preprocessing.image.img_to_array(img))
+                    #     y_tracker.append(box_coordinates)
 
         
     print('\n[Saving x and y arrays as .npy files]\n')
