@@ -19,6 +19,8 @@ class HandTracker:
             try:
                 self.x = np.load('data/x_tracker_data.npy')
                 self.y = np.load('data/y_tracker_data.npy')
+                self.x_train = self.x
+                self.y_train = self.y
             except:
                 print('cached x and y arrays not found...')
         else:
@@ -46,7 +48,7 @@ class HandTracker:
             layers.Dropout(0.5),
             layers.Dense(4096, activation='relu'),
             layers.Dropout(0.5),
-            layers.Dense(4, activation='sigmod'),
+            layers.Dense(4, activation='relu'),
         ])
         
         model.compile(loss='mse', optimizer='adam', metrics='accuracy')
