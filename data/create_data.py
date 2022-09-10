@@ -78,6 +78,7 @@ def process_raw_data():
                 if imglabel == label: # if label matches hand with ground truth use for gesture model
                     box_coordinates = img_boxes[ndx]
                     img, img_cropped = crop_hand(img_path, box_coordinates)
+                    img = img.resize((227,227), Image.Resampling.NEAREST)
                     img_cropped_arr = tf.keras.preprocessing.image.img_to_array(img_cropped)
                     img_arr = tf.keras.preprocessing.image.img_to_array(img)
                     # plt.imshow(img_cropped)
