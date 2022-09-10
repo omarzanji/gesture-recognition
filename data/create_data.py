@@ -37,7 +37,7 @@ def crop_hand(img, box):
     # plt.show()
 
     
-    return cropped_img
+    return image, cropped_img
 
 def process_raw_data():
     files = os.listdir('raw_data')
@@ -74,12 +74,15 @@ def process_raw_data():
             for ndx,imglabel in enumerate(img_labels):
                 if imglabel == label: # if label matches hand with ground truth use for gesture model
                     box_coordinates = img_boxes[ndx]
-                    img_cropped = crop_hand(img_path, box_coordinates)
-                    img_arr = tf.keras.preprocessing.image.img_to_array(img_cropped)
+                    img, img_cropped = crop_hand(img_path, box_coordinates)
+                    img_cropped_arr = tf.keras.preprocessing.image.img_to_array(img_cropped)
+                    img_arr = tf.keras.preprocessing.image.img_to_array(img)
                     # plt.imshow(img_cropped)
                     # plt.show()
-                    x_gesture.append(img_arr)
+                    x_gesture.append(img_cropped_arr)
                     y_gesture.append(label)
+                    x_tracker.append(img_arr)
+                    y_tracker.append(box_coordinates)
                 else: # use for hand tracker model
                     img = Image.open(img_path).convert('RGB')
                     img = img.resize((227,227), Image.Resampling.NEAREST)
@@ -92,7 +95,7 @@ def process_raw_data():
 
     np.save('x_gesture_data.npy', x_gesture)
     np.save('y__gesture_data.npy', y_gesture)
-    np.save('x_tracker_data.npy', x_gesture)
+    np.save('x_tracker_data.npy', x_tracker)
     np.save('y_tracker_data.npy', y_tracker)
 
     print('\n[Done!]\n')
