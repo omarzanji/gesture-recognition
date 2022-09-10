@@ -94,7 +94,7 @@ def process_raw_data():
     print('\n[Saving x and y arrays as .npy files]\n')
 
     np.save('x_gesture_data.npy', x_gesture)
-    np.save('y__gesture_data.npy', y_gesture)
+    np.save('y_gesture_data.npy', y_gesture)
     np.save('x_tracker_data.npy', x_tracker)
     np.save('y_tracker_data.npy', y_tracker)
 
