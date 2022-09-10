@@ -7,6 +7,9 @@ import matplotlib.pyplot as plt
 import json
 from PIL import Image
 
+GESTURE = False
+TRACK = True
+
 hands = mp.solutions.hands.Hands()
 
 def crop_hand(img, box):
@@ -79,24 +82,29 @@ def process_raw_data():
                     img_arr = tf.keras.preprocessing.image.img_to_array(img)
                     # plt.imshow(img_cropped)
                     # plt.show()
-                    x_gesture.append(img_cropped_arr)
-                    y_gesture.append(label)
-                    x_tracker.append(img_arr)
-                    y_tracker.append(box_coordinates)
+                    if GESTURE:
+                        x_gesture.append(img_cropped_arr)
+                        y_gesture.append(label)
+                    if TRACK:
+                        x_tracker.append(img_arr)
+                        y_tracker.append(box_coordinates)
                 else: # use for hand tracker model
                     img = Image.open(img_path).convert('RGB')
                     img = img.resize((227,227), Image.Resampling.NEAREST)
                     box_coordinates = img_boxes[ndx]
-                    x_tracker.append(tf.keras.preprocessing.image.img_to_array(img))
-                    y_tracker.append(box_coordinates)
+                    if TRACK:
+                        x_tracker.append(tf.keras.preprocessing.image.img_to_array(img))
+                        y_tracker.append(box_coordinates)
 
         
     print('\n[Saving x and y arrays as .npy files]\n')
 
-    np.save('x_gesture_data.npy', x_gesture)
-    np.save('y_gesture_data.npy', y_gesture)
-    np.save('x_tracker_data.npy', x_tracker)
-    np.save('y_tracker_data.npy', y_tracker)
+    if GESTURE:
+        np.save('x_gesture_data.npy', x_gesture)
+        np.save('y_gesture_data.npy', y_gesture)
+    if TRACK:
+        np.save('x_tracker_data.npy', x_tracker)
+        np.save('y_tracker_data.npy', y_tracker)
 
     print('\n[Done!]\n')
 
