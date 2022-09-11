@@ -107,7 +107,7 @@ def process_raw_data():
                     if TRACK:
                         data_count['no_gesture'] += 1
                         x_tracker.append(img_arr)
-                        y_tracker.append(box_coordinates)
+                        y_tracker.append(crop_box)
                     if GESTURE:
                         if not TRACK: data_count['no_gesture'] += 1
                         x_gesture.append(img_cropped_arr)
