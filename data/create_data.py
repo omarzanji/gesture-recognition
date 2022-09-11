@@ -87,8 +87,8 @@ def process_raw_data():
                     img, img_cropped, crop_box = crop_hand(img_path, box_coordinates)
                     img_cropped_arr = tf.keras.preprocessing.image.img_to_array(img_cropped)
                     img_arr = tf.keras.preprocessing.image.img_to_array(img)
-                    plt.imshow(img)
-                    plt.show()
+                    # plt.imshow(img)
+                    # plt.show()
                     if GESTURE:
                         data_count[label]+=1
                         x_gesture.append(img_cropped_arr)
@@ -98,14 +98,20 @@ def process_raw_data():
                         x_tracker.append(img_arr)
                         y_tracker.append(crop_box)
                 else: # use for hand tracker model
-                    pass
-                    img = Image.open(img_path).convert('RGB')
-                    img = img.resize((227,227), Image.Resampling.NEAREST)
                     box_coordinates = img_boxes[ndx]
+                    img, img_cropped, crop_box = crop_hand(img_path, box_coordinates)
+                    # plt.imshow(img_cropped)
+                    # plt.show()
+                    img_cropped_arr = tf.keras.preprocessing.image.img_to_array(img_cropped)
+                    img_arr = tf.keras.preprocessing.image.img_to_array(img)
                     if TRACK:
                         data_count['no_gesture'] += 1
-                        x_tracker.append(tf.keras.preprocessing.image.img_to_array(img))
+                        x_tracker.append(img_arr)
                         y_tracker.append(box_coordinates)
+                    if GESTURE:
+                        if not TRACK: data_count['no_gesture'] += 1
+                        x_gesture.append(img_cropped_arr)
+                        y_gesture.append('no_gesture')
 
     print(f'\n[Data Counts: {data_count}]')
     print('[Saving x and y arrays as .npy files]\n')

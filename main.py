@@ -210,7 +210,7 @@ class GestureNet:
 if __name__ == '__main__':
 
     # 0 for full gesture recognition, 1 for just tracker
-    NET = 0
+    NET = 1
 
     networks = ['GestureNet', 'HandTracker']
     selected = networks[NET]
@@ -220,5 +220,5 @@ if __name__ == '__main__':
         gest.gesture_net()
 
     elif selected == 'HandTracker':
-        track = HandTracker(train=False)
+        track = HandTracker(train=True)
         track.hand_tracker()
