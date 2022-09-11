@@ -9,6 +9,7 @@ from PIL import Image
 
 GESTURE = False
 TRACK = True
+CNT = 5000
 
 hands = mp.solutions.hands.Hands()
 
@@ -66,8 +67,8 @@ def process_raw_data():
             label_dict = json.load(f)
         print(f'processing {label}')
         for cnt,file_name in enumerate(data_folder):
-            if cnt % 100 == 0: print(f'{(cnt/5000)*100}%')
-            if cnt==6000: break
+            if cnt % 100 == 0: print(f'{(cnt/CNT)*100}%')
+            if cnt==CNT: break
             # img1 = tf.keras.utils.load_img(
             #     path = f'raw_data/{label}/{file_name}',
             #     color_mode = "rgb",
