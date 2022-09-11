@@ -1,1 +1,1 @@
-LABELS = ['like', 'dislike', 'palm']
+LABELS = ['like', 'dislike', 'palm', 'no_gesture']

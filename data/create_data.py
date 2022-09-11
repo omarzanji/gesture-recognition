@@ -56,7 +56,11 @@ def process_raw_data():
     y_tracker = []
     print('\n[Processing Data...]\n')
 
+    data_count = dict()
+
     for label in files:
+        data_count[label] = 0
+        data_count['no_gesture'] = 0
         data_folder = os.listdir(f'raw_data/{label}')
         with open(label+'.json', 'r') as f:
             label_dict = json.load(f)
@@ -85,22 +89,25 @@ def process_raw_data():
                     plt.imshow(img)
                     plt.show()
                     if GESTURE:
+                        data_count[label]+=1
                         x_gesture.append(img_cropped_arr)
                         y_gesture.append(label)
                     if TRACK:
+                        if not GESTURE: data_count[label] +=1
                         x_tracker.append(img_arr)
                         y_tracker.append(crop_box)
                 else: # use for hand tracker model
                     pass
-                    # img = Image.open(img_path).convert('RGB')
-                    # img = img.resize((227,227), Image.Resampling.NEAREST)
-                    # box_coordinates = img_boxes[ndx]
-                    # if TRACK:
-                    #     x_tracker.append(tf.keras.preprocessing.image.img_to_array(img))
-                    #     y_tracker.append(box_coordinates)
+                    img = Image.open(img_path).convert('RGB')
+                    img = img.resize((227,227), Image.Resampling.NEAREST)
+                    box_coordinates = img_boxes[ndx]
+                    if TRACK:
+                        data_count['no_gesture'] += 1
+                        x_tracker.append(tf.keras.preprocessing.image.img_to_array(img))
+                        y_tracker.append(box_coordinates)
 
-        
-    print('\n[Saving x and y arrays as .npy files]\n')
+    print(f'\n[Data Counts: {data_count}]')
+    print('[Saving x and y arrays as .npy files]\n')
 
     if GESTURE:
         np.save('x_gesture_data.npy', x_gesture)
@@ -110,5 +117,6 @@ def process_raw_data():
         np.save('y_tracker_data.npy', y_tracker)
 
     print('\n[Done!]\n')
+
 
 process_raw_data()
