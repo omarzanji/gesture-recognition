@@ -12,9 +12,9 @@ class HandTracking:
 
     def fetch_hand_landmarks(self, model=None):
         try:
-            capture = cv2.VideoCapture(0)
             hands = mp.solutions.hands.Hands()
             img_counter = 105
+            capture = cv2.VideoCapture(0)
             while True:
                 cropped_img = []
                 success, img = capture.read()
@@ -66,6 +66,7 @@ class HandTracking:
                             try:
                                 resized = cv2.resize(cropped_img, dsize=(227, 227), interpolation=cv2.INTER_NEAREST)
                                 gesture_pred = model.predict(np.expand_dims(resized, 0))
+                                print(gesture_pred)
                                 print(self.labels[np.argmax(np.round(gesture_pred))])
                             except BaseException as e:
                                 cropped_img = []

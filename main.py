@@ -9,7 +9,7 @@ import numpy as np
 import cv2
 import mediapipe as mp
 
-from hand_tracking import HandTracking
+from PIL import Image
 from data.labels import LABELS
 
 class HandTracker:
@@ -75,13 +75,48 @@ class HandTracker:
         plt.xlabel('epoch')
         plt.legend(['training loss'], loc='upper right')
 
+    def predict_hand_tracker(self, gesture_model=None):
+        try:
+            capture = cv2.VideoCapture(0)
+            while True:
+                cropped_img = []
+                success, img = capture.read()
+                rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                img = cv2.resize(rgb, (227,227), cv2.INTER_NEAREST)
+                pred = self.model.predict(np.expand_dims(img, 0))
+                x1,y1,x2,y2 = pred[0].astype(int)
+                img_pil = Image.fromarray(img.astype('uint8'), 'RGB')
+                cropped_img = img_pil.crop((x1,y1,x2,y2))
+                cropped_img = np.array(cropped_img) 
+                # Convert RGB to BGR 
+                cropped_img = cropped_img[:, :, ::-1].copy() 
+                cropped_img_window = cv2.resize(cropped_img, (500,500), cv2.INTER_NEAREST)
+                cropped_img_model = cv2.resize(cropped_img, (227,227), cv2.INTER_NEAREST)
+                if gesture_model==None:
+                    # cv2.rectangle(img, (x1, y1), (x2, y2), (255,0,0), 2)
+                    cv2.imshow("Image", rgb)
+                    cv2.imshow("Cropped Image", cropped_img_window)
+                    cv2.waitKey(1)
+                else:
+                    gesture_pred = gesture_model.predict(np.expand_dims(cropped_img_model, 0))
+                    label = LABELS[np.argmax(np.round(gesture_pred))]
+                    cv2.putText(cropped_img_window, str(label), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,255,0), 4)
+                    cv2.imshow("Image", rgb)
+                    cv2.imshow("Cropped Image", cropped_img_window)
+                    cv2.waitKey(1)
+
+        except KeyboardInterrupt:
+            capture.release()
+            cv2.destroyAllWindows()
+
     def hand_tracker(self):
         train = self.train
         if train:
             model = self.create_model()
             self.train_model(model)
         else:
-            pass
+            self.predict_hand_tracker(test=True)
+    
 
 class GestureNet:
 
@@ -157,8 +192,9 @@ class GestureNet:
         plt.legend(['training loss'], loc='upper right')
 
     def predict_gesture(self):
-        hand_tracking = HandTracking()
-        hand_tracking.fetch_hand_landmarks(model=self.model)
+        hand_tracking = HandTracker(train=False)
+        hand_tracking.predict_hand_tracker(gesture_model=self.model)
+        
 
     def gesture_net(self):
         train = self.train
@@ -173,8 +209,8 @@ class GestureNet:
 
 if __name__ == '__main__':
 
-    # 0 for gesture,1 for tracker
-    NET = 1
+    # 0 for full gesture recognition, 1 for just tracker
+    NET = 0
 
     networks = ['GestureNet', 'HandTracker']
     selected = networks[NET]
@@ -184,5 +220,5 @@ if __name__ == '__main__':
         gest.gesture_net()
 
     elif selected == 'HandTracker':
-        track = HandTracker(train=True)
+        track = HandTracker(train=False)
         track.hand_tracker()
