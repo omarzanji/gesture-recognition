@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import json
 from PIL import Image
 
-GESTURE = False
+GESTURE = True
 TRACK = True
 CNT = 5000
 
@@ -36,7 +36,8 @@ def crop_hand(img, box):
     x1, y1, x2, y2 = list(map(int, (x1, y1, x2, y2)))
 
     crop_box = x1,y1,x2,y2
-    cropped_img = np.asarray(image.crop((x1, y1, x2, y2)))
+    cropped_img = image.crop((x1, y1, x2, y2))
+    cropped_img = np.asarray(cropped_img.resize((227,227), Image.Resampling.NEAREST))
     # cropped_img = img[y2:y1,x1:x2]
     
     # plt.imshow(cropped_img)

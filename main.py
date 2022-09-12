@@ -90,7 +90,7 @@ class HandTracker:
                 cropped_img = np.array(cropped_img) 
                 # Convert RGB to BGR 
                 cropped_img = cropped_img[:, :, ::-1].copy() 
-                cropped_img_window = cv2.resize(cropped_img, (500,500), cv2.INTER_NEAREST)
+                cropped_img_window = cv2.resize(cropped_img, (300,300), cv2.INTER_NEAREST)
                 cropped_img_model = cv2.resize(cropped_img, (227,227), cv2.INTER_NEAREST)
                 if gesture_model==None:
                     # cv2.rectangle(img, (x1, y1), (x2, y2), (255,0,0), 2)
