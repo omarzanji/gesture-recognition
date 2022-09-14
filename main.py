@@ -82,7 +82,7 @@ class HandTracker:
             while True:
                 cropped_img = []
                 success, img = capture.read()
-                rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                rgb = cv2.cvtColor(img, cv2.IMREAD_COLOR)
                 img = cv2.resize(rgb, (227,227), cv2.INTER_NEAREST)
                 pred = self.model.predict(np.expand_dims(img, 0))
                 x1,y1,x2,y2 = pred[0].astype(int)
@@ -90,7 +90,7 @@ class HandTracker:
                 cropped_img = img_pil.crop((x1,y1,x2,y2))
                 cropped_img = np.array(cropped_img) 
                 # Convert RGB to BGR 
-                cropped_img = cropped_img[:, :, ::-1].copy() 
+                # cropped_img = cropped_img[:, :, ::-1].copy() 
                 cropped_img_window = cv2.resize(cropped_img, (300,300), cv2.INTER_NEAREST)
                 cropped_img_model = cv2.resize(cropped_img, (227,227), cv2.INTER_NEAREST)
                 if gesture_model==None:
@@ -211,7 +211,7 @@ class GestureNet:
 if __name__ == '__main__':
 
     # 0 for full gesture recognition, 1 for just tracker
-    NET = 1
+    NET = 0
 
     networks = ['GestureNet', 'HandTracker']
     selected = networks[NET]
@@ -221,5 +221,5 @@ if __name__ == '__main__':
         gest.gesture_net()
 
     elif selected == 'HandTracker':
-        track = HandTracker(train=True)
+        track = HandTracker(train=False)
         track.hand_tracker()

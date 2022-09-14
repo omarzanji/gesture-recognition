@@ -41,8 +41,10 @@ def crop_hand(img, box):
     cropped_img = np.asarray(cropped_img.resize((227,227), Image.Resampling.NEAREST))
     # cropped_img = img[y2:y1,x1:x2]
     
-    # plt.imshow(cropped_img)
-    # plt.show()
+    plt.imshow(cropped_img)
+    plt.show()
+    plt.imshow(image)
+    plt.show()
 
     return image, cropped_img, crop_box
 
