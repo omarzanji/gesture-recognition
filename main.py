@@ -63,6 +63,7 @@ class HandTracker:
         ypreds = model.predict(xtest)
         self.ypreds = ypreds
         accuracy = r2_score(ytest, self.ypreds)
+        print(ytest[0:10], self.ypreds[0:10])
         print(f'\n\n[Accuracy: {accuracy}]\n\n')
         self.ytest = ytest
         model.save(f'models/{name}')

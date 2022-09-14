@@ -7,16 +7,16 @@ import matplotlib.pyplot as plt
 import json
 from PIL import Image
 
-GESTURE = True
+GESTURE = False
 TRACK = True
-CNT = 5000
+CNT = 5500
 
 hands = mp.solutions.hands.Hands()
 
 def crop_hand(img, box):
     # img = cv2.imread(img, cv2.COLOR_BGR2RGB)
     image = Image.open(img).convert('RGB')
-    image = image.resize((227,227), Image.Resampling.NEAREST)
+    
     width, height = image.size
     x1, y1, w, h = box
     bbox = [x1 * width, y1 * height, (x1 + w) * width, (y1 + h) * height]
@@ -35,13 +35,13 @@ def crop_hand(img, box):
     y2 = cy + 1.0 * h // 2
     x1, y1, x2, y2 = list(map(int, (x1, y1, x2, y2)))
 
-    crop_box = x1,y1,x2,y2
+    crop_box = [x1,y1,x2,y2]
     cropped_img = image.crop((x1, y1, x2, y2))
     cropped_img = np.asarray(cropped_img.resize((227,227), Image.Resampling.NEAREST))
     # cropped_img = img[y2:y1,x1:x2]
     
-    # plt.imshow(cropped_img)
-    # plt.show()
+    plt.imshow(image)
+    plt.show()
 
     
     return image, cropped_img, crop_box
@@ -107,8 +107,8 @@ def process_raw_data():
                     img_arr = tf.keras.preprocessing.image.img_to_array(img)
                     if TRACK:
                         data_count['no_gesture'] += 1
-                        x_tracker.append(img_arr)
-                        y_tracker.append(crop_box)
+                        # x_tracker.append(img_arr)
+                        # y_tracker.append(crop_box)
                     if GESTURE:
                         if not TRACK: data_count['no_gesture'] += 1
                         x_gesture.append(img_cropped_arr)
