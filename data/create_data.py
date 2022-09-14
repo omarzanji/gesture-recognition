@@ -9,14 +9,15 @@ from PIL import Image
 
 GESTURE = False
 TRACK = True
-CNT = 5500
+CNT = 5000
 
 hands = mp.solutions.hands.Hands()
 
 def crop_hand(img, box):
     # img = cv2.imread(img, cv2.COLOR_BGR2RGB)
     image = Image.open(img).convert('RGB')
-    
+    image = image.resize((227,227), Image.Resampling.NEAREST)
+
     width, height = image.size
     x1, y1, w, h = box
     bbox = [x1 * width, y1 * height, (x1 + w) * width, (y1 + h) * height]
@@ -40,10 +41,9 @@ def crop_hand(img, box):
     cropped_img = np.asarray(cropped_img.resize((227,227), Image.Resampling.NEAREST))
     # cropped_img = img[y2:y1,x1:x2]
     
-    plt.imshow(image)
-    plt.show()
+    # plt.imshow(cropped_img)
+    # plt.show()
 
-    
     return image, cropped_img, crop_box
 
 def process_raw_data():
