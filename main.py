@@ -217,7 +217,7 @@ if __name__ == '__main__':
     selected = networks[NET]
 
     if selected == 'GestureNet':
-        gest = GestureNet(train=False)
+        gest = GestureNet(train=True)
         gest.gesture_net()
 
     elif selected == 'HandTracker':
