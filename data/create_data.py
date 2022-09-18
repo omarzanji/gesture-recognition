@@ -9,7 +9,7 @@ from PIL import Image
 
 GESTURE = True
 TRACK = False
-CNT = 5500
+CNT = 7000
 
 hands = mp.solutions.hands.Hands()
 
@@ -113,8 +113,8 @@ def process_raw_data():
                         # y_tracker.append(crop_box)
                     if GESTURE:
                         if not TRACK: data_count['no_gesture'] += 1
-                        x_gesture.append(img_cropped_arr)
-                        y_gesture.append('no_gesture')
+                        # x_gesture.append(img_cropped_arr)
+                        # y_gesture.append('no_gesture')
 
     print(f'\n[Data Counts: {data_count}]')
     print('[Saving x and y arrays as .npy files]\n')
