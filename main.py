@@ -24,29 +24,33 @@ class HandTracker:
             except:
                 print('cached x and y arrays not found...')
         else:
+            self.x = np.load('data/x_tracker_data.npy')
+            self.y = np.load('data/y_tracker_data.npy')
+            self.x_train = self.x
+            self.y_train = self.y
             self.model = keras.models.load_model('models/HandTracker')
 
     def create_model(self):
         # AlexNet 
         model = Sequential([
             # layers.Normalization(),
-            layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(227,227,2)),
+            layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(227,227,1)),
             layers.BatchNormalization(),
             layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
             layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
             layers.BatchNormalization(),
             layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
             layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-            layers.BatchNormalization(),
-            layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-            layers.BatchNormalization(),
-            layers.Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+            # layers.BatchNormalization(),
+            # layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+            # layers.BatchNormalization(),
+            # layers.Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
             layers.BatchNormalization(),
             layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
             layers.Flatten(),
-            layers.Dense(4096, activation='relu'),
+            layers.Dense(512, activation='relu'),
             layers.Dropout(0.5),
-            layers.Dense(4096, activation='relu'),
+            layers.Dense(512, activation='relu'),
             layers.Dropout(0.5),
             layers.Dense(4, activation='relu'),
         ])
@@ -57,7 +61,7 @@ class HandTracker:
     def train_model(self, model):
         name = 'HandTracker'
         xtrain, xtest, ytrain, ytest = train_test_split(self.x_train, self.y_train, train_size=0.9)
-        self.hist = model.fit(xtrain, ytrain, epochs=90, verbose=1)
+        self.hist = model.fit(xtrain, ytrain, epochs=90, verbose=1, batch_size=32)
         self.plot_history(self.hist)
         model.summary()
         ypreds = model.predict(xtest)
@@ -76,17 +80,29 @@ class HandTracker:
         plt.xlabel('epoch')
         plt.legend(['training loss'], loc='upper right')
 
+    def get_metrics(self):
+        xtrain, xtest, ytrain, ytest = train_test_split(self.x_train, self.y_train, train_size=0.9)
+        ypreds = self.model.predict(xtest)
+        accuracy = r2_score(ytest, ypreds)
+        print(f'Accuracy: {accuracy}')
+        self.ypreds = ypreds
+        self.ytest = ytest
+
     def predict_hand_tracker(self, gesture_model=None):
         try:
             capture = cv2.VideoCapture(0)
             while True:
                 cropped_img = []
                 success, img = capture.read()
+                
+                gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
                 rgb = cv2.cvtColor(img, cv2.IMREAD_COLOR)
-                img = cv2.resize(rgb, (227,227), cv2.INTER_NEAREST)
-                pred = self.model.predict(np.expand_dims(img, 0))
+                rgb_img = cv2.resize(rgb, (227,227), cv2.INTER_NEAREST)
+                gray_img = cv2.resize(gray, (227,227), cv2.INTER_NEAREST)
+
+                pred = self.model.predict(np.expand_dims(gray_img, 0))
                 x1,y1,x2,y2 = pred[0].astype(int)
-                img_pil = Image.fromarray(img.astype('uint8'), 'RGB')
+                img_pil = Image.fromarray(rgb_img.astype('uint8'), 'RGB')
                 cropped_img = img_pil.crop((x1,y1,x2,y2))
                 cropped_img = np.array(cropped_img) 
                 # Convert RGB to BGR 
@@ -116,7 +132,8 @@ class HandTracker:
             model = self.create_model()
             self.train_model(model)
         else:
-            self.predict_hand_tracker(test=True)
+            self.get_metrics()
+            # self.predict_hand_tracker(test=True)
     
 
 class GestureNet:
@@ -147,7 +164,7 @@ class GestureNet:
         # AlexNet 
         model = Sequential([
             # layers.Normalization(),
-            layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(227,227,2)),
+            layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(227,227,1)),
             layers.BatchNormalization(),
             layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
             layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
@@ -174,7 +191,7 @@ class GestureNet:
     def train_model(self, model):
         name = 'GestureNet'
         xtrain, xtest, ytrain, ytest = train_test_split(self.x_train, self.y_train, train_size=0.9)
-        self.hist = model.fit(xtrain, ytrain, epochs=90, verbose=1)
+        self.hist = model.fit(xtrain, ytrain, epochs=90, verbose=1, batch_size=32)
         self.plot_history(self.hist)
         model.summary()
         ypreds = model.predict(xtest)
@@ -212,7 +229,7 @@ if __name__ == '__main__':
 
     # 0 for full gesture recognition, 1 for just tracker
     NET = 1
-    TRAIN = True
+    TRAIN = False
 
     networks = ['GestureNet', 'HandTracker']
     selected = networks[NET]
