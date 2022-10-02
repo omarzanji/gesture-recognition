@@ -30,7 +30,7 @@ class HandTracker:
         # AlexNet 
         model = Sequential([
             # layers.Normalization(),
-            layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(227,227,3)),
+            layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(227,227,2)),
             layers.BatchNormalization(),
             layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
             layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
@@ -147,7 +147,7 @@ class GestureNet:
         # AlexNet 
         model = Sequential([
             # layers.Normalization(),
-            layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(227,227,3)),
+            layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(227,227,2)),
             layers.BatchNormalization(),
             layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
             layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
@@ -211,7 +211,7 @@ class GestureNet:
 if __name__ == '__main__':
 
     # 0 for full gesture recognition, 1 for just tracker
-    NET = 0
+    NET = 1
     TRAIN = True
 
     networks = ['GestureNet', 'HandTracker']

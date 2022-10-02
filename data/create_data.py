@@ -7,15 +7,16 @@ import matplotlib.pyplot as plt
 import json
 from PIL import Image
 
-GESTURE = True
-TRACK = False
+GESTURE = False
+TRACK = True
 CNT = 7000
 
 hands = mp.solutions.hands.Hands()
 
 def crop_hand(img, box):
     # img = cv2.imread(img, cv2.COLOR_BGR2RGB)
-    image = Image.open(img).convert('RGB')
+    # image = Image.open(img).convert('RGB')
+    image = Image.open(img).convert('L')
     image = image.resize((227,227), Image.Resampling.NEAREST)
 
     width, height = image.size
@@ -113,8 +114,8 @@ def process_raw_data():
                         # y_tracker.append(crop_box)
                     if GESTURE:
                         if not TRACK: data_count['no_gesture'] += 1
-                        # x_gesture.append(img_cropped_arr)
-                        # y_gesture.append('no_gesture')
+                        x_gesture.append(img_cropped_arr)
+                        y_gesture.append('no_gesture')
 
     print(f'\n[Data Counts: {data_count}]')
     print('[Saving x and y arrays as .npy files]\n')
