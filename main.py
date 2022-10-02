@@ -24,10 +24,10 @@ class HandTracker:
             except:
                 print('cached x and y arrays not found...')
         else:
-            self.x = np.load('data/x_tracker_data.npy')
-            self.y = np.load('data/y_tracker_data.npy')
-            self.x_train = self.x
-            self.y_train = self.y
+            # self.x = np.load('data/x_tracker_data.npy')
+            # self.y = np.load('data/y_tracker_data.npy')
+            # self.x_train = self.x
+            # self.y_train = self.y
             self.model = keras.models.load_model('models/HandTracker')
 
     def create_model(self):
@@ -41,16 +41,16 @@ class HandTracker:
             layers.BatchNormalization(),
             layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
             layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-            # layers.BatchNormalization(),
-            # layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-            # layers.BatchNormalization(),
-            # layers.Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+            layers.BatchNormalization(),
+            layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+            layers.BatchNormalization(),
+            layers.Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
             layers.BatchNormalization(),
             layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
             layers.Flatten(),
-            layers.Dense(512, activation='relu'),
+            layers.Dense(4096, activation='relu'),
             layers.Dropout(0.5),
-            layers.Dense(512, activation='relu'),
+            layers.Dense(4096, activation='relu'),
             layers.Dropout(0.5),
             layers.Dense(4, activation='relu'),
         ])
