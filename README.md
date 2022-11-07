@@ -1,4 +1,12 @@
-# gesture-recognition
-Gesture recognition using OpenCV for pre-trained hand tracking via landmark localization. Gestures are learned by a Convolutional Neural Network (CNN) Deep Learning architecture called AlexNet. It has a total of 5 convolutional layers with pooling and batch norm layers. Model tested with "palm", "up", and "down" hand gestures and scored 98% on accuracy with test data.
+Hand tracking and gesture recognition using two trained AlexNet models.  
+- GestureNet is trained on the [HaGRID Dataset](https://www.kaggle.com/datasets/kapitanov/hagrid): 
 
-![Model Stats](model-stats.jpg "Model Stats and Accuracy")
+## Installing / Running
+1. Install required Python packages:
+```bash
+pip install -r requirements.txt
+```
+2. Run main.py to test the models using your webcam!
+```shell
+python main.py
+```

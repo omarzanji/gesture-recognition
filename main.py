@@ -8,9 +8,22 @@ from matplotlib import pyplot as plt
 import numpy as np
 import cv2
 import mediapipe as mp
+import os
 
 from PIL import Image
 from data.labels import LABELS
+
+def fetch_models():
+    if not os.path.exists('models/'):
+        print('Downloading models.zip ...')
+        import wget
+        from zipfile import ZipFile
+        wget.download('https://github.com/omarzanji/gesture-recognition/releases/download/GestureNet/models.zip')
+        with ZipFile('models.zip', 'r') as modelszip:
+            modelszip.extractall()
+    else:
+        print('\nFound models/ folder, loading models...\n')
+
 
 class HandTracker:
     def __init__(self, train=False):
@@ -224,7 +237,7 @@ class GestureNet:
         else:
             self.predict_gesture()
 
-    
+
 
 if __name__ == '__main__':
 
@@ -234,6 +247,9 @@ if __name__ == '__main__':
 
     networks = ['GestureNet', 'HandTracker']
     selected = networks[NET]
+
+    # Download models.zip if models/ not found
+    fetch_models()
 
     if selected == 'GestureNet':
         gest = GestureNet(train=TRAIN)

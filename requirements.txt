@@ -1,0 +1,7 @@
+wget
+tensorflow
+opencv-python
+PIL
+numpy
+sklearn
+mediapipe
