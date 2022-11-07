@@ -102,12 +102,13 @@ class HandTracker:
 
                 pred = self.model.predict(np.expand_dims(gray_img, 0))
                 x1,y1,x2,y2 = pred[0].astype(int)
-                img_pil = Image.fromarray(rgb_img.astype('uint8'), 'RGB')
+                img_pil = Image.fromarray(gray_img)
+                img_pil_rgb = Image.fromarray(rgb_img.astype('uint8'), 'RGB')
                 cropped_img = img_pil.crop((x1,y1,x2,y2))
                 cropped_img = np.array(cropped_img) 
-                # Convert RGB to BGR 
-                # cropped_img = cropped_img[:, :, ::-1].copy() 
-                cropped_img_window = cv2.resize(cropped_img, (300,300), cv2.INTER_NEAREST)
+                cropped_img_rgb = img_pil_rgb.crop((x1,y1,x2,y2))
+                cropped_img_rgb = np.array(cropped_img_rgb) 
+                cropped_img_window = cv2.resize(cropped_img_rgb, (300,300), cv2.INTER_NEAREST)
                 cropped_img_model = cv2.resize(cropped_img, (227,227), cv2.INTER_NEAREST)
                 if gesture_model==None:
                     # cv2.rectangle(img, (x1, y1), (x2, y2), (255,0,0), 2)
@@ -132,8 +133,8 @@ class HandTracker:
             model = self.create_model()
             self.train_model(model)
         else:
-            self.get_metrics()
-            # self.predict_hand_tracker(test=True)
+            # self.get_metrics()
+            self.predict_hand_tracker(test=True)
     
 
 class GestureNet:
@@ -228,7 +229,7 @@ class GestureNet:
 if __name__ == '__main__':
 
     # 0 for full gesture recognition, 1 for just tracker
-    NET = 1
+    NET = 0
     TRAIN = False
 
     networks = ['GestureNet', 'HandTracker']
