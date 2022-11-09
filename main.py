@@ -9,6 +9,7 @@ import numpy as np
 import cv2
 import mediapipe as mp
 import os
+import json
 
 from PIL import Image
 from data.labels import LABELS
@@ -84,6 +85,8 @@ class HandTracker:
         print(f'\n\n[Accuracy: {accuracy}]\n\n')
         self.ytest = ytest
         model.save(f'models/{name}')
+        with open(f'{name}_training_loss','w') as f: # save training loss data
+            json.dump(self.hist, f)
 
     def plot_history(self, history):
         plt.figure()
@@ -214,6 +217,8 @@ class GestureNet:
         print(f'\n\n[Accuracy: {accuracy}]\n\n')
         self.ytest = ytest
         model.save(f'models/{name}')
+        with open(f'{name}_training_loss','w') as f: # save training loss data
+            json.dump(self.hist, f)
 
     def plot_history(self, history):
         plt.figure()
