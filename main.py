@@ -76,17 +76,20 @@ class HandTracker:
         name = 'HandTracker'
         xtrain, xtest, ytrain, ytest = train_test_split(self.x_train, self.y_train, train_size=0.9)
         self.hist = model.fit(xtrain, ytrain, epochs=90, verbose=1, batch_size=32)
+        loss = self.hist.history['loss']
+        acc = self.hist.history['accuracy']
+        hist_dict = {"loss": loss, "accuracy": acc}
         self.plot_history(self.hist)
         model.summary()
         ypreds = model.predict(xtest)
         self.ypreds = ypreds
         accuracy = r2_score(ytest, self.ypreds)
-        print(ytest[0:10], self.ypreds[0:10])
+        # print(ytest[0:10], self.ypreds[0:10])
         print(f'\n\n[Accuracy: {accuracy}]\n\n')
         self.ytest = ytest
         model.save(f'models/{name}')
-        with open(f'{name}_training_loss','w') as f: # save training loss data
-            json.dump(self.hist, f)
+        with open(f'{name}_training_loss.json','w') as f: # save training loss data
+            json.dump(hist_dict, f)
 
     def plot_history(self, history):
         plt.figure()
@@ -171,7 +174,7 @@ class GestureNet:
         self.x_train = self.x
         self.y_train = []
         for label in self.y:
-            onehot = [0, 0, 0]
+            onehot = [0, 0, 0, 0]
             onehot[self.labels.index(label)] = 1
             self.y_train.append(onehot)
         self.y_train = np.array(self.y_train)
@@ -199,7 +202,7 @@ class GestureNet:
             layers.Dropout(0.5),
             layers.Dense(4096, activation='relu'),
             layers.Dropout(0.5),
-            layers.Dense(3, activation='softmax'),
+            layers.Dense(4, activation='softmax'),
         ])
         
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics='accuracy')
@@ -209,6 +212,9 @@ class GestureNet:
         name = 'GestureNet'
         xtrain, xtest, ytrain, ytest = train_test_split(self.x_train, self.y_train, train_size=0.9)
         self.hist = model.fit(xtrain, ytrain, epochs=90, verbose=1, batch_size=32)
+        loss = self.hist.history['loss']
+        acc = self.hist.history['accuracy']
+        hist_dict = {"loss": loss, "accuracy": acc}
         self.plot_history(self.hist)
         model.summary()
         ypreds = model.predict(xtest)
@@ -217,8 +223,8 @@ class GestureNet:
         print(f'\n\n[Accuracy: {accuracy}]\n\n')
         self.ytest = ytest
         model.save(f'models/{name}')
-        with open(f'{name}_training_loss','w') as f: # save training loss data
-            json.dump(self.hist, f)
+        with open(f'{name}_training_loss.json','w') as f: # save training loss data
+            json.dump(hist_dict, f)
 
     def plot_history(self, history):
         plt.figure()
@@ -248,13 +254,13 @@ if __name__ == '__main__':
 
     # 0 for full gesture recognition, 1 for just tracker
     NET = 0
-    TRAIN = False
+    TRAIN = True
 
     networks = ['GestureNet', 'HandTracker']
     selected = networks[NET]
 
     # Download models.zip if models/ not found
-    fetch_models()
+    # fetch_models()
 
     if selected == 'GestureNet':
         gest = GestureNet(train=TRAIN)

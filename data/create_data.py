@@ -7,8 +7,8 @@ import matplotlib.pyplot as plt
 import json
 from PIL import Image
 
-GESTURE = False
-TRACK = True
+GESTURE = True
+TRACK = False
 CNT = 7000
 
 hands = mp.solutions.hands.Hands()

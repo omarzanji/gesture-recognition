@@ -1,7 +1,7 @@
 wget
 tensorflow
 opencv-python
-PIL
+Pillow
 numpy
-sklearn
+scikit-learn
 mediapipe
