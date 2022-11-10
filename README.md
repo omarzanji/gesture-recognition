@@ -1,5 +1,5 @@
 Hand tracking and gesture recognition using two trained AlexNet models.  
-- GestureNet is trained on the [HaGRID Dataset](https://www.kaggle.com/datasets/kapitanov/hagrid): 
+- HandTracker and GestureNet trained on the [HaGRID Dataset](https://www.kaggle.com/datasets/kapitanov/hagrid): 
 
 ## Installing / Running
 1. Install required Python packages:
@@ -10,3 +10,19 @@ pip install -r requirements.txt
 ```shell
 python main.py
 ```
+
+# HandTracker 
+HandTracker crops an image to just one hand. For each hand gesture, the HaGRID dataset contains 4 x, y pixel coordinates that represent a crop-box around a sample’s hand. We can use this to train a model that takes an image as an input and outputs 4 float values representing pixel coordinates. We can use the AlexNet architecture to take in an input image of size 227x277x1and train a model to predict 4 float values. See the diagram below for the HandTracker architecture.
+
+![HandTracker](images/HandTracker.png)
+
+## HandTracker Training Metrics
+![HandTracker](images/HandTrackerTraining.png)
+
+# GestureNet
+GestureNet takes the output from HandTracker and crops the input image to the area of interest. We train this model on classification of 3 class labels: ‘like’, ‘dislike’, and ‘palm’. See Figure the diagram below for the GestureNet architecture.
+
+![GestureNet](images/GestureNet.png)
+
+## HandTracker Training Metrics
+![GestureNet](images/GestureNetTraining.png)

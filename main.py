@@ -249,12 +249,42 @@ class GestureNet:
             self.predict_gesture()
 
 
+def plot_model_metrics():
+    with open('GestureNet_training_loss.json', 'r') as f:
+        gnet_hist = json.load(f)
+    with open('HandTracker_training_loss.json', 'r') as f:
+        hnet_hist = json.load(f)
+    plt.figure()
+    plt.subplot(1, 2, 1)
+    plt.xlabel('Epochs')
+    plt.title('GestureNet Loss')
+    plt.plot(gnet_hist['loss'], color='blue', label='loss')
+    plt.subplot(1, 2, 2)
+    plt.title('GestureNet Accuracy')
+    plt.plot(gnet_hist['accuracy'], color='green', label='accuracy')
+    plt.xlabel('Epochs')
+    plt.figure()
+    plt.subplot(1, 2, 1)
+    plt.xlabel('Epochs')
+    plt.title('HandTracker Loss')
+    plt.plot(hnet_hist['loss'], color='blue', label='loss')
+    plt.subplot(1, 2, 2)
+    plt.title('HandTracker Accuracy')
+    plt.plot(hnet_hist['accuracy'], color='green', label='accuracy')
+    plt.xlabel('Epochs')
+    plt.show()
+
 
 if __name__ == '__main__':
 
     # 0 for full gesture recognition, 1 for just tracker
     NET = 0
-    TRAIN = True
+    TRAIN = False
+    METRICS = False
+
+    if METRICS: 
+        plot_model_metrics()
+        exit()
 
     networks = ['GestureNet', 'HandTracker']
     selected = networks[NET]
