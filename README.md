@@ -24,5 +24,5 @@ GestureNet takes the output from HandTracker and crops the input image to the ar
 
 ![GestureNet](images/GestureNet.png)
 
-## HandTracker Training Metrics
+## GestureNet Training Metrics
 ![GestureNet](images/GestureNetTraining.png)
