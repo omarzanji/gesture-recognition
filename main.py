@@ -131,14 +131,14 @@ class HandTracker:
                     # cv2.rectangle(img, (x1, y1), (x2, y2), (255,0,0), 2)
                     cv2.imshow("Image", rgb)
                     cv2.imshow("Cropped Image", cropped_img_window)
-                    cv2.waitKey(1)
+                    cv2.waitKey(1000)
                 else:
                     gesture_pred = gesture_model.predict(np.expand_dims(cropped_img_model, 0))
                     label = LABELS[np.argmax(np.round(gesture_pred))]
                     cv2.putText(cropped_img_window, str(label), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,255,0), 4)
                     cv2.imshow("Image", rgb)
                     cv2.imshow("Cropped Image", cropped_img_window)
-                    cv2.waitKey(1)
+                    cv2.waitKey(1000)
 
         except KeyboardInterrupt:
             capture.release()
