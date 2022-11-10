@@ -2,12 +2,10 @@ from tensorflow.keras.models import Sequential
 import tensorflow.keras.layers as layers
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, r2_score
-import tensorflow as tf
 from tensorflow import keras
 from matplotlib import pyplot as plt
 import numpy as np
 import cv2
-import mediapipe as mp
 import os
 import json
 
