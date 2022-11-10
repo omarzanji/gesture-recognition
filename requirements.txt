@@ -4,4 +4,3 @@ opencv-python
 Pillow
 numpy
 scikit-learn
-mediapipe
