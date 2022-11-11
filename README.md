@@ -26,3 +26,10 @@ GestureNet takes the output from HandTracker and crops the input image to the ar
 
 ## GestureNet Training Metrics
 ![GestureNet](images/GestureNetTraining.png)
+
+## HandTracker and GestureNet Demo
+<p float="left">
+  <img src="images/palm.png" width="150" />
+  <img src="images/like.png" width="150" />
+  <img src="images/dislike.png" width="150" />
+</p>
