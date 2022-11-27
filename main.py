@@ -160,7 +160,7 @@ class HandTracker:
                         cv2.waitKey(300)
                     elif self.mode == 'prod':
                         self.log_gesture(label)
-                        cv2.waitKey(1000)
+                        cv2.waitKey(500)
 
         except KeyboardInterrupt:
             capture.release()
