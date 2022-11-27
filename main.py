@@ -1,3 +1,4 @@
+import sqlite3
 from tensorflow.keras.models import Sequential
 import tensorflow.keras.layers as layers
 from sklearn.model_selection import train_test_split
@@ -25,12 +26,16 @@ def fetch_models():
 
 
 class HandTracker:
-    def __init__(self, train=False):
+    def __init__(self, train=False, mode=None):
         self.train = train
+        self.mode = mode
+        if mode == 'prod':
+            self.path = 'modules/gesture-recognition/'
+        else: self.path = ''
         if train:
             try:
-                self.x = np.load('data/x_tracker_data.npy')
-                self.y = np.load('data/y_tracker_data.npy')
+                self.x = np.load(self.path+'data/x_tracker_data.npy')
+                self.y = np.load(self.path+'data/y_tracker_data.npy')
                 self.x_train = self.x
                 self.y_train = self.y
             except:
@@ -40,7 +45,7 @@ class HandTracker:
             # self.y = np.load('data/y_tracker_data.npy')
             # self.x_train = self.x
             # self.y_train = self.y
-            self.model = keras.models.load_model('models/HandTracker')
+            self.model = keras.models.load_model(self.path+'models/HandTracker')
 
     def create_model(self):
         # AlexNet 
@@ -105,6 +110,19 @@ class HandTracker:
         self.ypreds = ypreds
         self.ytest = ytest
 
+    def log_gesture(self, gesture):
+        '''
+        Logs predicted gesture to gestures table in ditto.db sqlite3 database.
+        '''
+        if not gesture=='no_gesture':
+            SQL = sqlite3.connect("ditto.db")
+            cur = SQL.cursor()
+            cur.execute("CREATE TABLE IF NOT EXISTS gestures(gesture VARCHAR)")
+            SQL.commit()
+            cur.execute("INSERT INTO gestures VALUES('%s')" % gesture)
+            SQL.commit()
+            SQL.close()
+
     def predict_hand_tracker(self, gesture_model=None):
         try:
             capture = cv2.VideoCapture(0)
@@ -131,14 +149,18 @@ class HandTracker:
                     # cv2.rectangle(img, (x1, y1), (x2, y2), (255,0,0), 2)
                     cv2.imshow("Image", rgb)
                     cv2.imshow("Cropped Image", cropped_img_window)
-                    cv2.waitKey(1000)
+                    cv2.waitKey(300)
                 else:
                     gesture_pred = gesture_model.predict(np.expand_dims(cropped_img_model, 0))
                     label = LABELS[np.argmax(np.round(gesture_pred))]
-                    cv2.putText(cropped_img_window, str(label), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,255,0), 4)
-                    cv2.imshow("Image", rgb)
-                    cv2.imshow("Cropped Image", cropped_img_window)
-                    cv2.waitKey(1000)
+                    if self.mode == 'dev':
+                        cv2.putText(cropped_img_window, str(label), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,255,0), 4)
+                        cv2.imshow("Image", rgb)
+                        cv2.imshow("Cropped Image", cropped_img_window)
+                        cv2.waitKey(300)
+                    elif self.mode == 'prod':
+                        self.log_gesture(label)
+                        cv2.waitKey(1000)
 
         except KeyboardInterrupt:
             capture.release()
@@ -156,17 +178,21 @@ class HandTracker:
 
 class GestureNet:
 
-    def __init__(self, train=False):
+    def __init__(self, train=False, mode=None):
+        self.mode = mode
+        if mode == 'prod':
+            self.path = 'modules/gesture-recognition/'
+        else: self.path = ''
         self.labels = LABELS
         self.train = train
         if train:
             try:
-                self.x = np.load('data/x_gesture_data.npy')
-                self.y = np.load('data/y_gesture_data.npy')
+                self.x = np.load(self.path+'data/x_gesture_data.npy')
+                self.y = np.load(self.path+'data/y_gesture_data.npy')
             except:
                 print('cached x and y arrays not found...')
         else:
-            self.model = keras.models.load_model('models/GestureNet')
+            self.model = keras.models.load_model(self.path+'models/GestureNet')
     
     def load_data(self):
         self.x_train = self.x
@@ -233,7 +259,7 @@ class GestureNet:
         plt.legend(['training loss'], loc='upper right')
 
     def predict_gesture(self):
-        hand_tracking = HandTracker(train=False)
+        hand_tracking = HandTracker(train=False, mode=self.mode)
         hand_tracking.predict_hand_tracker(gesture_model=self.model)
         
 
@@ -275,6 +301,14 @@ def plot_model_metrics():
 
 if __name__ == '__main__':
 
+    import sys
+    mode = 'dev'
+    if len( sys.argv ) > 1:
+        arg = str(sys.argv[1])
+        if 'prod' in arg:
+            mode = 'prod'
+    print(f'\nGestureNet running in {mode}')
+
     # 0 for full gesture recognition, 1 for just tracker
     NET = 0
     TRAIN = False
@@ -291,9 +325,9 @@ if __name__ == '__main__':
     # fetch_models()
 
     if selected == 'GestureNet':
-        gest = GestureNet(train=TRAIN)
+        gest = GestureNet(train=TRAIN, mode=mode)
         gest.gesture_net()
 
     elif selected == 'HandTracker':
-        track = HandTracker(train=TRAIN)
+        track = HandTracker(train=TRAIN, mode=mode)
         track.hand_tracker()
