@@ -11,15 +11,14 @@ import cv2
 import os
 import json
 import sys
-
+import wget
+from zipfile import ZipFile
 from PIL import Image
 from data.labels import LABELS
 
-def fetch_models():
-    if not os.path.exists('models/'):
+def fetch_models(path):
+    if not os.path.exists(path+'models/'):
         print('Downloading models.zip ...')
-        import wget
-        from zipfile import ZipFile
         wget.download('https://github.com/omarzanji/gesture-recognition/releases/download/GestureNet/models.zip')
         with ZipFile('models.zip', 'r') as modelszip:
             modelszip.extractall()
@@ -195,6 +194,7 @@ class GestureNet:
         if mode == 'prod':
             self.path = 'modules/gesture-recognition/'
         else: self.path = ''
+        fetch_models(self.path)
         self.labels = LABELS
         if self.train_reinforce: 
             self.train = True
@@ -371,9 +371,6 @@ if __name__ == '__main__':
 
     networks = ['GestureNet', 'HandTracker']
     selected = networks[NET]
-
-    # Download models.zip if models/ not found
-    fetch_models()
 
     if selected == 'GestureNet':
         gest = GestureNet(train=TRAIN, mode=mode, train_reinforce=TRAIN_REINFORCE)
