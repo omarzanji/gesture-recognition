@@ -116,10 +116,21 @@ def process_raw_data():
                         if not TRACK: data_count['no_gesture'] += 1
                         x_gesture.append(img_cropped_arr)
                         y_gesture.append('no_gesture')
+    if GESTURE:
+        if os.path.exists('no_gesture_custom/'):
+            print('\n[Found no_gesture reinforcement data. Adding to X and Y.]\n')
+            for sample in os.listdir('no_gesture_custom/'):
+                image = Image.open(f'no_gesture_custom/{sample}').convert('L')
+                sample_x = tf.keras.preprocessing.image.img_to_array(image)
+                sample_y = 'no_gesture'
+                x_gesture.append(sample_x)
+                y_gesture.append(sample_y)
+                data_count['no_gesture'] += 1
 
     print(f'\n[Data Counts: {data_count}]')
     print('[Saving x and y arrays as .npy files]\n')
 
+    
     if GESTURE:
         np.save('x_gesture_data.npy', x_gesture)
         np.save('y_gesture_data.npy', y_gesture)
