@@ -1,5 +1,7 @@
 Hand tracking and gesture recognition using two trained AlexNet models.  
 - HandTracker and GestureNet trained on the [HaGRID Dataset](https://www.kaggle.com/datasets/kapitanov/hagrid): 
+- AlexNet from [ImageNet Classification with Deep Convolutional
+Neural Networks](https://proceedings.neurips.cc/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf) paper.
 
 ## Installing / Running
 1. Install required Python packages:
