@@ -373,7 +373,7 @@ if __name__ == '__main__':
     selected = networks[NET]
 
     # Download models.zip if models/ not found
-    # fetch_models()
+    fetch_models()
 
     if selected == 'GestureNet':
         gest = GestureNet(train=TRAIN, mode=mode, train_reinforce=TRAIN_REINFORCE)
