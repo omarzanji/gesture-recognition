@@ -362,7 +362,7 @@ if __name__ == '__main__':
     # 0 for full gesture recognition, 1 for just tracker
     NET = 0
     TRAIN = False
-    TRAIN_REINFORCE = True
+    TRAIN_REINFORCE = False
     METRICS = False
 
     if METRICS: 
