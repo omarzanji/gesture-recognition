@@ -136,7 +136,7 @@ class HandTracker:
                 rgb_img = cv2.resize(rgb, (227,227), cv2.INTER_NEAREST)
                 gray_img = cv2.resize(gray, (227,227), cv2.INTER_NEAREST)
 
-                pred = self.model.predict(np.expand_dims(gray_img, 0))
+                pred = self.model.predict(np.expand_dims(gray_img, 0), verbose=0)
                 x1,y1,x2,y2 = pred[0].astype(int)
                 img_pil = Image.fromarray(gray_img)
                 img_pil_rgb = Image.fromarray(rgb_img.astype('uint8'), 'RGB')
@@ -152,7 +152,7 @@ class HandTracker:
                     cv2.imshow("Cropped Image", cropped_img_window)
                     cv2.waitKey(300)
                 else:
-                    gesture_pred = gesture_model.predict(np.expand_dims(cropped_img_model, 0))
+                    gesture_pred = gesture_model.predict(np.expand_dims(cropped_img_model, 0), verbose=0)
                     label = LABELS[np.argmax(np.round(gesture_pred))]
                     if self.mode == 'dev' or self.mode == 'reinforce':
                         cv2.putText(cropped_img_window, str(label), (50,50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,255,0), 4)
@@ -169,6 +169,7 @@ class HandTracker:
                         cv2.waitKey(300)
                     elif self.mode == 'prod':
                         self.log_gesture(label)
+                        # print(label)
                         cv2.waitKey(500)
 
         except KeyboardInterrupt:
