@@ -166,7 +166,7 @@ class HandTracker:
                                     os.mkdir(f'data/reinforcement/{target}/')
                                 filecount = len(os.listdir(f'data/reinforcement/{target}/'))
                                 cv2.imwrite(f'data/reinforcement/{target}/{filecount}.png', cropped_img_model)
-                        cv2.waitKey(300)
+                        cv2.waitKey(30)
                     elif self.mode == 'prod':
                         self.log_gesture(label)
                         # print(label)
