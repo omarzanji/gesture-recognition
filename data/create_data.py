@@ -2,7 +2,6 @@ import os
 import tensorflow as tf
 import numpy as np
 import cv2
-import mediapipe as mp
 import matplotlib.pyplot as plt
 import json
 from PIL import Image
@@ -11,8 +10,6 @@ GESTURE = True
 TRACK = False
 CNT = 7000
 RGB = 0
-
-hands = mp.solutions.hands.Hands()
 
 def crop_hand(img, box):
     if RGB: mode = 'RGB'

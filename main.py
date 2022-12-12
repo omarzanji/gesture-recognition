@@ -80,11 +80,11 @@ class HandTracker:
             model = Sequential([
                 EfficientNetB1(
                     include_top = False,
-                    input_shape =(227,227,1),
+                    input_shape =(227,227,3),
                     pooling = 'avg'
                 ),
                 layers.Dense(256),
-                layers.LeakyRelu(),
+                layers.LeakyReLU(),
                 layers.Dense(4, activation='relu'),
             ])
         
@@ -283,11 +283,11 @@ class GestureNet:
             model = Sequential([
                 EfficientNetB1(
                     include_top = False,
-                    input_shape =(227,227,1),
+                    input_shape =(227,227,3),
                     pooling = 'avg'
                 ),
                 layers.Dense(256),
-                layers.LeakyRelu(),
+                layers.LeakyReLU(),
                 layers.Dense(4, activation='relu'),
             ])
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics='accuracy')
