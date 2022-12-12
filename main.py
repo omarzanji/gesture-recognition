@@ -107,6 +107,7 @@ class HandTracker:
                 loss='mse',
                 metrics=['accuracy']
             )
+            return model
 
     def train_model(self, model):
         name = 'HandTracker'
@@ -328,6 +329,7 @@ class GestureNet:
                 loss='sparse_categorical_crossentropy',
                 metrics=['sparse_categorical_accuracy']
             )
+            return model
 
     def fine_tune(self):
         print('\n\n[Freezing first 6 layers of GestureNet and Finetuning...]\n')
