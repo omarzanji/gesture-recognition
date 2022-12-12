@@ -75,7 +75,8 @@ class HandTracker:
                 layers.Dropout(0.5),
                 layers.Dense(4, activation='relu'),
             ])
-            
+            model.compile(loss='mse', optimizer='adam', metrics='accuracy')
+            return model
         else:
             model = Sequential([
                 EfficientNetB1(
@@ -87,9 +88,25 @@ class HandTracker:
                 layers.LeakyReLU(),
                 layers.Dense(4, activation='relu'),
             ])
-        
-        model.compile(loss='mse', optimizer='adam', metrics='accuracy')
-        return model
+            block_unfreeze = 5
+            trainable_flag = False
+            for layer in model.layers[0].layers:
+                if layer.name.find('bn') != -1:
+                    layer.trainable = True
+                else:
+                    layer.trainable = trainable_flag
+
+                if layer.name.find(f'block{block_unfreeze}') != -1:
+                    trainable_flag = True
+                    layer.trainable = trainable_flag
+            print('EfficientNet layers and trainable status:')
+            for layer in model.layers[0].layers:
+                print(layer.name, layer.trainable) 
+            model.compile(
+                optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), 
+                loss='mse',
+                metrics=['accuracy']
+            )
 
     def train_model(self, model):
         name = 'HandTracker'
@@ -279,6 +296,8 @@ class GestureNet:
                 layers.Dropout(0.5),
                 layers.Dense(4, activation='softmax'),
             ])
+            model.compile(loss='categorical_crossentropy', optimizer='adam', metrics='accuracy')
+            return model
         else:
             model = Sequential([
                 EfficientNetB1(
@@ -288,10 +307,27 @@ class GestureNet:
                 ),
                 layers.Dense(256),
                 layers.LeakyReLU(),
-                layers.Dense(4, activation='relu'),
+                layers.Dense(4, activation='softmax'),
             ])
-        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics='accuracy')
-        return model
+            block_unfreeze = 5
+            trainable_flag = False
+            for layer in model.layers[0].layers:
+                if layer.name.find('bn') != -1:
+                    layer.trainable = True
+                else:
+                    layer.trainable = trainable_flag
+
+                if layer.name.find(f'block{block_unfreeze}') != -1:
+                    trainable_flag = True
+                    layer.trainable = trainable_flag
+            print('EfficientNet layers and trainable status:')
+            for layer in model.layers[0].layers:
+                print(layer.name, layer.trainable) 
+            model.compile(
+                optimizer=tf.keras.optimizers.Adam(learning_rate=0.001), 
+                loss='sparse_categorical_crossentropy',
+                metrics=['sparse_categorical_accuracy']
+            )
 
     def fine_tune(self):
         print('\n\n[Freezing first 6 layers of GestureNet and Finetuning...]\n')
