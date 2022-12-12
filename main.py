@@ -1,6 +1,7 @@
 import sqlite3
 from tensorflow.keras.models import Sequential
 import tensorflow.keras.layers as layers
+from tensorflow.keras.applications.efficientnet import EfficientNetB1, preprocess_input
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, r2_score
 from tensorflow import keras
@@ -27,9 +28,10 @@ def fetch_models(path):
 
 
 class HandTracker:
-    def __init__(self, train=False, mode=None):
+    def __init__(self, train=False, mode=None, arch=None):
         self.train = train
         self.mode = mode
+        self.arch = arch
         if mode == 'prod':
             self.path = 'modules/gesture-recognition/'
         else: self.path = ''
@@ -49,29 +51,42 @@ class HandTracker:
             self.model = keras.models.load_model(self.path+'models/HandTracker')
 
     def create_model(self):
-        # AlexNet 
-        model = Sequential([
-            # layers.Normalization(),
-            layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(227,227,1)),
-            layers.BatchNormalization(),
-            layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
-            layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
-            layers.BatchNormalization(),
-            layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
-            layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-            layers.BatchNormalization(),
-            layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-            layers.BatchNormalization(),
-            layers.Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-            layers.BatchNormalization(),
-            layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
-            layers.Flatten(),
-            layers.Dense(4096, activation='relu'),
-            layers.Dropout(0.5),
-            layers.Dense(4096, activation='relu'),
-            layers.Dropout(0.5),
-            layers.Dense(4, activation='relu'),
-        ])
+        if self.arch == 'AlexNet':
+            # AlexNet 
+            model = Sequential([
+                # layers.Normalization(),
+                layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(227,227,1)),
+                layers.BatchNormalization(),
+                layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
+                layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
+                layers.BatchNormalization(),
+                layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
+                layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+                layers.BatchNormalization(),
+                layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+                layers.BatchNormalization(),
+                layers.Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+                layers.BatchNormalization(),
+                layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
+                layers.Flatten(),
+                layers.Dense(4096, activation='relu'),
+                layers.Dropout(0.5),
+                layers.Dense(4096, activation='relu'),
+                layers.Dropout(0.5),
+                layers.Dense(4, activation='relu'),
+            ])
+            
+        else:
+            model = Sequential([
+                EfficientNetB1(
+                    include_top = False,
+                    input_shape =(227,227,1),
+                    pooling = 'avg'
+                ),
+                layers.Dense(256),
+                layers.LeakyRelu(),
+                layers.Dense(4, activation='relu'),
+            ])
         
         model.compile(loss='mse', optimizer='adam', metrics='accuracy')
         return model
@@ -188,10 +203,10 @@ class HandTracker:
 
 class GestureNet:
 
-    def __init__(self, train=False, mode=None, train_reinforce=None):
+    def __init__(self, train=False, mode=None, train_reinforce=None, arch=None):
         self.mode = mode
         self.train_reinforce = train_reinforce
-        
+        self.arch = arch
         if mode == 'prod':
             self.path = 'modules/gesture-recognition/'
         else: self.path = ''
@@ -240,31 +255,41 @@ class GestureNet:
         self.y_train = np.array(self.y_train)
 
     def create_model(self):
-
-        # AlexNet 
-        model = Sequential([
-            # layers.Normalization(),
-            layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(227,227,1)),
-            layers.BatchNormalization(),
-            layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
-            layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
-            layers.BatchNormalization(),
-            layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
-            layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-            layers.BatchNormalization(),
-            layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-            layers.BatchNormalization(),
-            layers.Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
-            layers.BatchNormalization(),
-            layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
-            layers.Flatten(),
-            layers.Dense(4096, activation='relu'),
-            layers.Dropout(0.5),
-            layers.Dense(4096, activation='relu'),
-            layers.Dropout(0.5),
-            layers.Dense(4, activation='softmax'),
-        ])
-        
+        if self.arch == 'AlexNet':
+            # AlexNet 
+            model = Sequential([
+                # layers.Normalization(),
+                layers.Conv2D(filters=96, kernel_size=(11,11), strides=(4,4), activation='relu', input_shape=(227,227,1)),
+                layers.BatchNormalization(),
+                layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
+                layers.Conv2D(filters=256, kernel_size=(5,5), strides=(1,1), activation='relu', padding="same"),
+                layers.BatchNormalization(),
+                layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
+                layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+                layers.BatchNormalization(),
+                layers.Conv2D(filters=384, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+                layers.BatchNormalization(),
+                layers.Conv2D(filters=256, kernel_size=(3,3), strides=(1,1), activation='relu', padding="same"),
+                layers.BatchNormalization(),
+                layers.MaxPool2D(pool_size=(3,3), strides=(2,2)),
+                layers.Flatten(),
+                layers.Dense(4096, activation='relu'),
+                layers.Dropout(0.5),
+                layers.Dense(4096, activation='relu'),
+                layers.Dropout(0.5),
+                layers.Dense(4, activation='softmax'),
+            ])
+        else:
+            model = Sequential([
+                EfficientNetB1(
+                    include_top = False,
+                    input_shape =(227,227,1),
+                    pooling = 'avg'
+                ),
+                layers.Dense(256),
+                layers.LeakyRelu(),
+                layers.Dense(4, activation='relu'),
+            ])
         model.compile(loss='categorical_crossentropy', optimizer='adam', metrics='accuracy')
         return model
 
@@ -365,6 +390,7 @@ if __name__ == '__main__':
     TRAIN = False
     TRAIN_REINFORCE = False
     METRICS = False
+    ARCH = ['AlexNet', 'EfficientNet'][1]
 
     if METRICS: 
         plot_model_metrics()
@@ -374,9 +400,18 @@ if __name__ == '__main__':
     selected = networks[NET]
 
     if selected == 'GestureNet':
-        gest = GestureNet(train=TRAIN, mode=mode, train_reinforce=TRAIN_REINFORCE)
+        gest = GestureNet(
+            train=TRAIN, 
+            mode=mode, 
+            train_reinforce=TRAIN_REINFORCE,
+            arch=ARCH
+        )
         gest.gesture_net()
 
     elif selected == 'HandTracker':
-        track = HandTracker(train=TRAIN, mode=mode)
+        track = HandTracker(
+            train=TRAIN,
+            mode=mode,
+            arch=ARCH
+        )
         track.hand_tracker()
