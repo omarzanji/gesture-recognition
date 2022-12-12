@@ -344,8 +344,14 @@ class GestureNet:
 
     def train_model(self, model):
         name = 'GestureNet'
+        if self.arch == 'AlexNet': 
+            epochs = 90
+            batch_size = 32
+        else: 
+            epochs = 15
+            batch_size = 8
         xtrain, xtest, ytrain, ytest = train_test_split(self.x_train, self.y_train, train_size=0.9)
-        self.hist = model.fit(xtrain, ytrain, epochs=90, verbose=1, batch_size=32)
+        self.hist = model.fit(xtrain, ytrain, epochs=epochs, verbose=1, batch_size=batch_size)
         loss = self.hist.history['loss']
         acc = self.hist.history['accuracy']
         hist_dict = {"loss": loss, "accuracy": acc}

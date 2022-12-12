@@ -9,7 +9,7 @@ from PIL import Image
 GESTURE = True
 TRACK = False
 CNT = 7000
-RGB = 0
+RGB = 1
 
 def crop_hand(img, box):
     if RGB: mode = 'RGB'
