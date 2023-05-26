@@ -22,7 +22,7 @@ HandTracker crops an image to just one hand. For each hand gesture, the HaGRID d
 ![HandTracker](images/HandTrackerTraining.png)
 
 # GestureNet
-GestureNet takes the output from HandTracker and uses a cropped images of the isolated hand gestures as training data. We train this model on classification of 4 class labels: ‘like’, ‘dislike’, ‘palm’ and 'no_gesture'. See the diagram below for the GestureNet architecture.
+GestureNet takes the output from HandTracker and uses cropped images of the isolated hand gestures as training data. We train this model on classification of 4 class labels: ‘like’, ‘dislike’, ‘palm’ and 'no_gesture'. See the diagram below for the GestureNet architecture.
 
 ![GestureNet](images/GestureNet.png)
 
