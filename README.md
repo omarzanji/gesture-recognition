@@ -14,7 +14,7 @@ python main.py
 ```
 
 # HandTracker 
-HandTracker crops an image to just one hand. For each hand gesture, the HaGRID dataset contains 4 x, y pixel coordinates that represent a crop-box around a sample’s hand. We can use this to train a model that takes an image as an input and outputs 4 float values representing pixel coordinates. We can use the AlexNet architecture to take in an input image of size 227x277x1and train a model to predict 4 float values. See the diagram below for the HandTracker architecture.
+HandTracker crops an image to just one hand. For each hand gesture, the HaGRID dataset contains 4 x, y pixel coordinates that represent a crop-box around a sample’s hand. We can use this to train a model that takes an image as an input and outputs 4 float values representing pixel coordinates. We can use the AlexNet architecture to take in an input image of size 227x277x1 and train a model to predict 4 float values. See the diagram below for the HandTracker architecture.
 
 ![HandTracker](images/HandTracker.png)
 
